@@ -86,10 +86,14 @@
   if ($env:BAZE_API_KEY -or (Test-Path (Join-Path $HOME '.baze\credentials.json'))) {
     Ok "이미 키가 등록돼 있어요. 키를 바꾸고 싶으면 나중에 'baze login'을 치면 돼요."
   } else {
-    Write-Host "   메모장에 붙여둔 API 키를 붙여넣고 Enter를 누르세요." -ForegroundColor White
-    Write-Host "   (마우스 오른쪽 클릭 = 붙여넣기. 화면에 안 보여도 들어간 거예요.)" -ForegroundColor White
+    Write-Host "   곧 baze가 API 키를 물어봐요. 그 줄이 나오면 메모장의 키를 붙여넣고 Enter." -ForegroundColor White
+    Write-Host "   (마우스 오른쪽 클릭 = 붙여넣기)" -ForegroundColor White
     baze.cmd login
-    if ($LASTEXITCODE -ne 0) { Fail "키 등록이 안 됐어요. 키를 다시 확인하고 'baze login'을 쳐서 다시 해보세요."; return }
+    if ($LASTEXITCODE -ne 0 -or -not (Test-Path (Join-Path $HOME '.baze\credentials.json'))) {
+      Fail "키 등록이 안 됐어요. 'baze login'을 치고, 키를 묻는 줄이 나오면 그때 키를 붙여넣어 주세요."
+      return
+    }
+    Ok "키 등록 완료."
   }
 
   Write-Host ""

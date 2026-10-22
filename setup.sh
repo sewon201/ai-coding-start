@@ -64,9 +64,10 @@ say "3/3  baze API 키 등록"
 if [ -n "$BAZE_API_KEY" ] || [ -f "$HOME/.baze/credentials.json" ]; then
   ok "이미 키가 등록돼 있어요. 키를 바꾸고 싶으면 나중에 'baze login'을 치면 돼요."
 else
-  echo "   메모장에 붙여둔 API 키를 붙여넣고(command + V) Enter를 누르세요."
-  echo "   화면에 안 보여도 들어간 거예요."
-  baze login || fail "키 등록이 안 됐어요. 키를 다시 확인하고 'baze login'을 쳐서 다시 해보세요."
+  echo "   곧 baze가 API 키를 물어봐요. 그 줄이 나오면 메모장의 키를 붙여넣고(command + V) Enter."
+  baze login && [ -f "$HOME/.baze/credentials.json" ] \
+    || fail "키 등록이 안 됐어요. 'baze login'을 치고, 키를 묻는 줄이 나오면 그때 키를 붙여넣어 주세요."
+  ok "키 등록 완료."
 fi
 
 echo ""
