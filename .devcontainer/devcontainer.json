@@ -1,0 +1,18 @@
+{
+  "name": "AI 코딩 연습",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code @openai/codex @mindlogic-ai/baze --no-fund --no-audit",
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["START.md"]
+    },
+    "vscode": {
+      "settings": {
+        "terminal.integrated.cwd": "${workspaceFolder}/ai-practice",
+        "workbench.startupEditor": "none",
+        "editor.fontSize": 15,
+        "terminal.integrated.fontSize": 15
+      }
+    }
+  }
+}

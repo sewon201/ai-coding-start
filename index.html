@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 코딩 시작하기</title>
+<meta name="description" content="학교 baze 계정으로 Claude Code와 Codex를 쓰는 방법을 한 단계씩 안내합니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Pen+Script&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#23272E; --ink2:#3D434C; --muted:#4B5260;
+  --blue:#1D4ED8; --red:#B42318; --marker:#FFE27A;
+  --grid:#E3EBF6; --paper:#FFFFFF; --code:#23272E;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink); background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  font-family:'Gowun Dodum',system-ui,sans-serif; font-size:17px; line-height:1.75;
+}
+a{color:var(--blue)} a:hover{color:#1E3A8A}
+.wrap{max-width:780px; margin:0 auto; padding:36px 16px 72px}
+.pen{font-family:'Nanum Pen Script',cursive; color:var(--blue); font-size:26px; line-height:1.25}
+.pen.red{color:var(--red)}
+h1{margin:0; font-size:clamp(34px,6vw,50px); line-height:1.3; font-weight:400}
+h2{margin:0; font-size:clamp(25px,4.5vw,30px); line-height:1.4; font-weight:400}
+h2:focus{outline:none}
+mark{background:linear-gradient(transparent 55%,var(--marker) 55%); color:inherit; padding:0 2px}
+.hl{background:var(--marker); padding:0 4px}
+p{margin:0}
+ol,ul{margin:0; padding-left:22px; display:flex; flex-direction:column; gap:8px}
+.lead{color:var(--ink2); max-width:600px}
+.stack{display:flex; flex-direction:column; gap:20px}
+.card{background:#fff; border:2px solid var(--ink); border-radius:4px; padding:28px 24px}
+@media (min-width:640px){.card{padding:36px 36px 32px}}
+
+/* 기기 고르기 */
+.devices{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px}
+.device{
+  font:inherit; text-align:left; cursor:pointer; color:var(--ink);
+  background:#fff; border:2px solid var(--ink); border-radius:4px; padding:18px;
+  display:flex; flex-direction:column; gap:4px; min-height:44px;
+  transition:transform .12s, box-shadow .12s;
+}
+.device:hover,.device:focus-visible{transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink); outline:none}
+.device b{font-weight:400; font-size:20px}
+.device span{font-size:15px; color:var(--muted); line-height:1.5}
+.resume{
+  font:inherit; cursor:pointer; text-align:left; color:var(--ink);
+  background:var(--marker); border:2px solid var(--ink); border-radius:4px; padding:14px 18px; min-height:44px;
+}
+
+/* 단계 화면 */
+.topbar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; font-size:15px; color:var(--muted)}
+.linkbtn{font:inherit; font-size:15px; color:var(--blue); background:none; border:0; padding:8px 0; cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+.bar{height:10px; border:1.5px solid var(--ink); border-radius:6px; background:#fff; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--ink); transition:width .25s}
+.cmd{display:flex; align-items:stretch; gap:10px; background:var(--code); border-radius:4px; padding:12px 12px 12px 16px}
+.cmd code{flex:1; min-width:0; align-self:center; color:#fff; font-family:'JetBrains Mono',ui-monospace,monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; word-break:break-all}
+.copy{font:inherit; font-size:14px; cursor:pointer; background:#fff; color:var(--ink); border:0; border-radius:3px; padding:6px 12px; min-height:40px; min-width:64px; flex-shrink:0}
+.copy.done{background:var(--marker)}
+.note{border:1.5px dashed var(--ink); border-radius:4px; padding:14px 16px; font-size:15.5px; line-height:1.7; color:var(--ink2)}
+.trouble{border-top:2px solid var(--ink); padding-top:16px; display:flex; flex-direction:column; gap:8px}
+.trouble>.pen{font-size:24px; color:var(--red)}
+details{border:1.5px solid #C9CDD3; border-radius:4px; background:#fff}
+details[open]{border-color:var(--ink)}
+summary{cursor:pointer; padding:12px 14px; font-size:15.5px; list-style:none; display:flex; justify-content:space-between; gap:12px; min-height:44px; align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+"; font-size:20px; line-height:1}
+details[open] summary::after{content:"–"}
+details>div{padding:0 14px 14px; font-size:15.5px; line-height:1.75; color:var(--ink2); display:flex; flex-direction:column; gap:10px}
+.inline{font-family:'JetBrains Mono',ui-monospace,monospace; font-size:.88em; background:#EEF0F2; padding:1px 6px; border-radius:3px; word-break:break-all}
+.nav{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px}
+.btn{font:inherit; font-size:16px; cursor:pointer; border-radius:4px; padding:12px 20px; min-height:48px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center}
+.btn.main{background:var(--ink); color:#fff; border:2px solid var(--ink)}
+.btn.main:hover{background:#000}
+.btn.ghost{background:#fff; color:var(--ink); border:2px solid #C9CDD3}
+.btn.wide{width:100%}
+.btn:focus-visible,.copy:focus-visible,summary:focus-visible,.linkbtn:focus-visible,.resume:focus-visible{outline:3px solid var(--blue); outline-offset:2px}
+footer{margin-top:48px; font-size:14px; color:var(--muted); text-align:center}
+[hidden]{display:none !important}
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+
+  <!-- 첫 화면 -->
+  <section id="home" class="stack" aria-labelledby="home-title">
+    <div class="pen">정보 수업 · 준비물: 노트북이나 태블릿, 충전기</div>
+    <h1 id="home-title">AI랑 같이 코딩하는 법,<br><mark>설정부터 차근차근.</mark></h1>
+    <p class="lead">학교에서 받은 baze 계정 하나로 Claude Code랑 Codex를 둘 다 쓸 수 있어요. 순서대로 따라오기만 하면 되고, 중간에 빨간 글씨가 떠도 컴퓨터 고장 난 거 아니에요.</p>
+
+    <button type="button" class="resume" id="resume" hidden></button>
+
+    <div class="stack" style="gap:12px; margin-top:8px">
+      <div class="pen" style="color:var(--ink); font-size:30px">내 기기는?</div>
+      <div class="devices">
+        <button type="button" class="device" data-device="win"><b>윈도우 노트북</b><span>PowerShell에 한 줄 붙여넣기</span></button>
+        <button type="button" class="device" data-device="mac"><b>맥북</b><span>터미널에 한 줄 붙여넣기</span></button>
+        <button type="button" class="device" data-device="tab"><b>태블릿</b><span>설치 없이 브라우저에서</span></button>
+      </div>
+      <p style="font-size:15px; color:var(--muted)">고른 기기에 맞는 설명만 나와요. 하다가 창을 닫아도 어디까지 했는지 기억해 둘게요.</p>
+    </div>
+  </section>
+
+  <!-- 단계 화면 -->
+  <section id="step" class="stack" hidden aria-live="polite">
+    <div class="topbar">
+      <span id="step-where"></span>
+      <button type="button" class="linkbtn" id="change-device">기기 바꾸기</button>
+    </div>
+    <div class="bar" aria-hidden="true"><i id="step-bar"></i></div>
+
+    <article class="card stack">
+      <div class="pen" id="step-num"></div>
+      <h2 id="step-title" tabindex="-1" style="margin-top:-12px"></h2>
+      <div id="step-body" class="stack" style="gap:16px"></div>
+      <div id="step-trouble" class="trouble"></div>
+      <div class="nav">
+        <button type="button" class="btn ghost" id="prev">이전</button>
+        <button type="button" class="btn main" id="next"></button>
+      </div>
+    </article>
+  </section>
+
+  <!-- 끝 화면 -->
+  <section id="done" class="stack" hidden>
+    <div class="pen">끝!</div>
+    <h2 id="done-title" tabindex="-1">이제 AI랑 같이 코딩할 수 있어요.</h2>
+    <div class="card stack" id="done-body"></div>
+    <button type="button" class="linkbtn" id="back-home" style="align-self:flex-start">처음 화면으로</button>
+  </section>
+
+  <footer>막히면 화면을 캡처해서 선생님한테 보내주세요. 어디서 막혔는지 보이면 금방 해결돼요.</footer>
+</main>
+
+<script>
+(function(){
+  // 저장소 주소. 저장소 이름을 바꾸면 여기만 고치면 됩니다.
+  var GH_USER = "sewon201";
+  var GH_REPO = "ai-coding-start";
+  var RAW = "https://raw.githubusercontent.com/" + GH_USER + "/" + GH_REPO + "/main/";
+  var CODESPACE = "https://codespaces.new/" + GH_USER + "/" + GH_REPO + "?quickstart=1";
+
+  function cmd(text){ return { cmd: text }; }
+  function html(text){ return { html: text }; }
+  function pen(text, red){ return { pen: text, red: !!red }; }
+  function note(text){ return { note: text }; }
+  function link(text, href){ return { link: text, href: href }; }
+
+  // ---- 공통 단계 ----
+  var KEY_STEP = {
+    title: "baze에서 API 키 받기",
+    next: "키 복사해 뒀어요",
+    body: [
+      html('<ol>' +
+        '<li><a href="https://app.baze.co" target="_blank" rel="noopener">baze</a>에 학교에서 받은 계정으로 로그인해요.</li>' +
+        '<li>왼쪽 아래 <span class="hl">API Gateway</span> 버튼을 눌러요.</li>' +
+        '<li><span class="hl">API 키 생성</span>을 누르면 긴 글자가 나와요. 그게 키예요.</li>' +
+        '<li>바로 복사해서 메모장(태블릿은 메모 앱)에 붙여두세요.</li>' +
+      '</ol>'),
+      pen("↑ 창 닫으면 다시 안 보여줘요! 복사 먼저", true),
+      note("이 키는 내 크레딧이랑 연결돼 있어요. 친구한테 보내거나 단톡방에 올리면 그 친구가 내 크레딧을 쓰게 됩니다.")
+    ],
+    trouble: [
+      { q: "API Gateway 버튼이 없어요", a: [
+        html("학교 계정으로 로그인했는지 먼저 보세요. 개인 계정으로 들어가 있으면 안 보일 수 있어요."),
+        html("학교 계정인데도 없으면 선생님한테 말해주세요. 학교 쪽 설정 문제라 여러분이 고칠 수 있는 게 아니에요.")
+      ]},
+      { q: "복사 안 하고 창을 닫아버렸어요", a: [
+        html("괜찮아요. <b>API 키 생성</b>을 한 번 더 눌러서 새로 만들면 돼요. 못 쓰게 된 예전 키는 목록에서 지워두세요.")
+      ]}
+    ]
+  };
+
+  var T_UNRECOGNIZED_WIN = { q: "'baze'은(는) 인식되지 않습니다 라고 나와요", a: [
+    html("설치 직후엔 창이 새 프로그램을 아직 몰라요. PowerShell 창을 <b>닫았다가 새로 열고</b> 다시 쳐보세요. 대부분 이걸로 해결돼요."),
+    html("그래도 안 되면 설치 명령어를 한 번 더 붙여넣어 보세요. 이미 깔린 건 건너뛰니까 걱정 안 해도 돼요.")
+  ]};
+  var T_401 = { q: "401 Unauthorized 가 떠요", a: [
+    html("키가 잘못 들어간 거예요. 아래 명령어로 다시 등록하고, 메모장에 있는 키를 다시 붙여넣으세요."),
+    cmd("baze login"),
+    html("메모장에 둔 키도 이상하면 baze에서 키를 새로 만들어도 돼요.")
+  ]};
+  var T_POLICY = { q: "Request blocked by content policy 가 떠요", a: [
+    html("질문이나 폴더 안 파일에 <b>전화번호, 이메일 주소</b> 같은 개인정보가 있으면 학교 설정 때문에 막혀요. 그 부분을 지우고 다시 해보세요.")
+  ]};
+  var T_CREDIT = { q: "크레딧이 부족하다고 나와요", a: [
+    html("이번 달 크레딧을 다 쓴 거예요. 남은 양은 이렇게 확인해요."),
+    cmd("baze credits"),
+    html("Claude Code랑 Codex는 일반 채팅보다 크레딧을 훨씬 많이 써요. 큰 부탁 한 번보다 작은 부탁 여러 번이 아껴 쓰는 방법이에요.")
+  ]};
+  var T_MODEL = { q: "모델을 찾을 수 없다 / 404 가 떠요", a: [
+    html("아래 명령어를 치고 나온 화면을 캡처해서 선생님한테 보내주세요. 학교에서 열어둔 모델 목록이 바뀌었을 수 있어요."),
+    cmd("baze models")
+  ]};
+
+  function runClaude(folderCmd){
+    return {
+      title: "Claude Code 켜보기",
+      next: "켜졌어요",
+      body: [
+        html("연습용 폴더를 하나 만들고 그 안에서 켤 거예요. AI는 지금 있는 폴더 안의 파일을 만지기 때문에, 아무 데서나 켜면 안 돼요."),
+        cmd(folderCmd),
+        html("폴더로 들어왔으면 Claude Code를 켜요."),
+        cmd("baze claude"),
+        html("처음 켜면 색 테마 고르기, '이 폴더 믿어도 돼?' 같은 질문이 나와요. 방향키랑 Enter로 넘기면 돼요. 그다음 이렇게 부탁해 보세요."),
+        note("index.html 파일로 지금 시간을 크게 보여주는 시계 페이지 만들어줘"),
+        pen("파일 만들어도 되냐고 물어보면, 읽어보고 Yes"),
+        html('다 쓰고 나갈 땐 <span class="inline">/exit</span> 를 치면 돼요. 만든 <span class="inline">index.html</span>은 연습 폴더에 있으니 더블클릭해서 열어보세요.')
+      ],
+      trouble: [T_401, T_POLICY, T_CREDIT, T_MODEL]
+    };
+  }
+  function runCodex(extraTrouble){
+    return {
+      title: "Codex도 켜보기",
+      next: "다 했어요",
+      body: [
+        html("같은 연습 폴더에서 이번엔 Codex를 켜요. Claude Code를 켜둔 창이면 <span class=\"inline\">/exit</span> 로 먼저 나오세요."),
+        cmd("baze codex"),
+        html("아까 만든 시계를 이어서 고쳐달라고 해보세요."),
+        note("시계 페이지에 배경색 바꾸는 버튼 하나 달아줘"),
+        html("Codex도 파일을 고치기 전에 허락을 물어봐요. 둘 다 써보고 나한테 맞는 걸 고르면 됩니다. 정답은 없어요.")
+      ],
+      trouble: [
+        { q: "ChatGPT 로그인 화면이 나와요", a: [
+          html('<span class="inline">codex</span> 가 아니라 <span class="inline">baze codex</span> 로 켰는지 보세요. 앞에 baze를 붙여야 학교 계정으로 연결돼요.')
+        ]},
+        { q: "trusted directory, git 어쩌고 하는 말이 나와요", a: [
+          html("Codex는 git 저장소 안에서 일하는 걸 좋아해요. 아래 명령어를 한 번 치고 다시 켜보세요."),
+          cmd("git init")
+        ]}
+      ].concat(extraTrouble || [], [T_401, T_CREDIT])
+    };
+  }
+
+  // ---- 기기별 단계 ----
+  var DEVICES = {
+    win: {
+      label: "윈도우 노트북",
+      steps: [
+        KEY_STEP,
+        {
+          title: "PowerShell 열기",
+          next: "창 열었어요",
+          body: [
+            html("<ol><li>키보드의 윈도우 키를 눌러요.</li><li><b>powershell</b> 이라고 쳐요.</li><li><b>Windows PowerShell</b>을 클릭해요.</li></ol>"),
+            html("파랗거나 검은 창이 뜨고 <span class=\"inline\">PS C:\\Users\\내이름&gt;</span> 같은 글자가 보이면 성공이에요. 관리자 권한으로 열 필요는 없어요."),
+            pen("검은 창이 무서워 보여도 그냥 글자 치는 곳이에요")
+          ],
+          trouble: [
+            { q: "검색해도 PowerShell이 안 나와요", a: [
+              html("<b>터미널</b>로 검색해 보세요. Windows 11은 '터미널' 앱 안에 PowerShell이 들어 있어요.")
+            ]}
+          ]
+        },
+        {
+          title: "설치 명령어 붙여넣기",
+          next: "설치 끝났어요",
+          body: [
+            html("아래 줄을 복사하고, PowerShell 창에서 <b>마우스 오른쪽 클릭</b>하면 붙여넣어져요. 그리고 Enter."),
+            cmd("irm " + RAW + "setup.ps1 | iex"),
+            html("<ul>" +
+              "<li>중간에 '이 앱이 디바이스를 변경하도록 허용하시겠어요?' 창이 뜨면 <b>예</b>.</li>" +
+              "<li>글자가 막 올라가는 동안은 그냥 기다리면 돼요. 5~10분쯤 걸릴 수 있어요.</li>" +
+              "<li>마지막에 키를 넣으라고 하면 아까 메모장에 둔 키를 붙여넣고 Enter. 화면에 키가 안 보여도 들어간 거예요.</li>" +
+            "</ul>"),
+            pen("다 끝나면 PowerShell 창을 닫았다가 새로 여세요")
+          ],
+          trouble: [
+            { q: "이 시스템에서 스크립트를 실행할 수 없으므로… 라고 나와요", a: [
+              html("윈도우가 처음 보는 프로그램을 막은 거예요. 아래 줄을 붙여넣고 Enter, 물어보면 <b>Y</b>를 치세요. 그다음 설치 명령어를 다시 붙여넣으면 돼요."),
+              cmd("Set-ExecutionPolicy -Scope CurrentUser RemoteSigned")
+            ]},
+            { q: "'winget'은(는) 인식되지 않습니다 라고 나와요", a: [
+              html("Microsoft Store에서 <b>앱 설치 관리자</b>를 검색해서 업데이트하고 다시 해보세요."),
+              html('그래도 안 되면 <a href="https://nodejs.org/ko" target="_blank" rel="noopener">nodejs.org</a>에서 <b>LTS</b> 버전을 직접 받아 설치한 뒤 설치 명령어를 다시 붙여넣으세요.')
+            ]},
+            { q: "인증서, certificate, SSL 같은 말이 나와요", a: [
+              html("학교 와이파이가 일부 다운로드를 막을 때가 있어요. 휴대폰 핫스팟이나 집 인터넷에서 다시 해보세요.")
+            ]},
+            T_UNRECOGNIZED_WIN,
+            { q: "키를 잘못 넣은 것 같아요", a: [
+              html("설치는 다시 안 해도 돼요. 키만 다시 등록하면 돼요."),
+              cmd("baze login")
+            ]}
+          ]
+        },
+        runClaude("mkdir ~\\ai-practice -Force; cd ~\\ai-practice"),
+        runCodex([T_UNRECOGNIZED_WIN])
+      ],
+      again: "PowerShell을 열고 아래 두 줄이면 돼요.",
+      againCmds: ["cd ~\\ai-practice", "baze claude"]
+    },
+
+    mac: {
+      label: "맥북",
+      steps: [
+        KEY_STEP,
+        {
+          title: "터미널 열기",
+          next: "창 열었어요",
+          body: [
+            html("<ol><li><b>command + space</b>를 눌러요.</li><li><b>터미널</b>이라고 쳐요.</li><li>Enter.</li></ol>"),
+            html("하얗거나 검은 창에 <span class=\"inline\">내이름@MacBook ~ %</span> 같은 글자가 보이면 성공이에요."),
+            pen("검은 창이 무서워 보여도 그냥 글자 치는 곳이에요")
+          ],
+          trouble: [
+            { q: "검색해도 터미널이 안 나와요", a: [
+              html("Finder → 응용 프로그램 → 유틸리티 폴더 안에 <b>터미널</b>이 있어요.")
+            ]}
+          ]
+        },
+        {
+          title: "설치 명령어 붙여넣기",
+          next: "설치 끝났어요",
+          body: [
+            html("아래 줄을 복사하고 터미널에 <b>command + V</b>로 붙여넣은 뒤 Enter."),
+            cmd('/bin/bash -c "$(curl -fsSL ' + RAW + 'setup.sh)"'),
+            html("<ul>" +
+              "<li>글자가 막 올라가는 동안은 그냥 기다리면 돼요. 5~10분쯤 걸릴 수 있어요.</li>" +
+              "<li>마지막에 키를 넣으라고 하면 아까 메모장에 둔 키를 붙여넣고 Enter. 화면에 키가 안 보여도 들어간 거예요.</li>" +
+            "</ul>"),
+            pen("다 끝나면 터미널을 command + Q로 완전히 끄고 다시 여세요")
+          ],
+          trouble: [
+            { q: "command not found: baze 라고 나와요", a: [
+              html("설치 직후엔 터미널이 새 프로그램을 아직 몰라요. <b>command + Q</b>로 터미널을 완전히 끄고 다시 열어보세요."),
+              html("그래도 안 되면 설치 명령어를 한 번 더 붙여넣어 보세요. 이미 깔린 건 건너뛰어요.")
+            ]},
+            { q: "Permission denied, EACCES 같은 말이 나와요", a: [
+              html("앞에 <b>sudo</b>를 붙여서 억지로 하지 말고 선생님을 불러주세요. 예전에 깔아둔 프로그램이랑 꼬인 경우라 같이 보는 게 빨라요.")
+            ]},
+            { q: "인증서, certificate, SSL 같은 말이 나와요", a: [
+              html("학교 와이파이가 일부 다운로드를 막을 때가 있어요. 휴대폰 핫스팟이나 집 인터넷에서 다시 해보세요.")
+            ]},
+            { q: "키를 잘못 넣은 것 같아요", a: [
+              html("설치는 다시 안 해도 돼요. 키만 다시 등록하면 돼요."),
+              cmd("baze login")
+            ]}
+          ]
+        },
+        runClaude("mkdir -p ~/ai-practice && cd ~/ai-practice"),
+        runCodex()
+      ],
+      again: "터미널을 열고 아래 두 줄이면 돼요.",
+      againCmds: ["cd ~/ai-practice", "baze claude"]
+    },
+
+    tab: {
+      label: "태블릿",
+      steps: [
+        KEY_STEP,
+        {
+          title: "GitHub 계정 준비하기",
+          next: "로그인했어요",
+          body: [
+            html("태블릿엔 Claude Code를 설치할 수가 없어요. 그래서 <b>인터넷 속 컴퓨터</b>를 빌려 쓸 건데, 그걸 빌려주는 곳이 GitHub예요."),
+            html('<a href="https://github.com/signup" target="_blank" rel="noopener">github.com</a>에서 계정을 만들거나, 이미 있으면 로그인만 하세요. 학교 메일이든 개인 메일이든 상관없어요.'),
+            pen("키보드 있으면 지금 연결하세요. 훨씬 편해요")
+          ],
+          trouble: [
+            { q: "인증 메일이 안 와요", a: [
+              html("스팸함을 먼저 보세요. 학교 메일은 가끔 늦게 오기도 해요. 5분 넘게 안 오면 다른 메일로 가입해도 돼요.")
+            ]}
+          ]
+        },
+        {
+          title: "작업 공간 열기",
+          next: "터미널 보여요",
+          body: [
+            html("아래 버튼을 누르고 초록색 <b>Create codespace</b> 버튼을 누르세요. 필요한 프로그램은 선생님이 미리 다 넣어놨어요."),
+            link("작업 공간 열기", CODESPACE),
+            html("처음엔 1~3분 걸려요. 화면이 코드 편집기처럼 바뀌고 아래쪽에 <b>터미널</b>(글자 치는 칸)이 생기면 준비 끝이에요."),
+            note("한 달에 무료로 쓸 수 있는 시간이 정해져 있어요. 다 쓰고 나면 꼭 멈춰주세요. 방법은 마지막에 알려줄게요.")
+          ],
+          trouble: [
+            { q: "터미널이 안 보여요", a: [
+              html("왼쪽 위 줄 세 개(≡) 메뉴 → <b>Terminal</b> → <b>New Terminal</b>을 누르세요.")
+            ]},
+            { q: "화면이 너무 작아요", a: [
+              html("태블릿을 가로로 돌리고, 브라우저 메뉴에서 '데스크톱 사이트 보기'를 켜보세요.")
+            ]},
+            { q: "작업 공간을 만들 수 없다고 나와요", a: [
+              html("이번 달 무료 시간을 다 썼을 수 있어요. 화면을 캡처해서 선생님한테 보내주세요.")
+            ]}
+          ]
+        },
+        {
+          title: "키 등록하기",
+          next: "등록했어요",
+          body: [
+            html("터미널을 한 번 톡 누르고 아래 명령어를 붙여넣은 뒤 Enter."),
+            cmd("baze login"),
+            html("키를 넣으라고 하면 메모 앱에 둔 키를 붙여넣고 Enter. 화면에 키가 안 보여도 들어간 거예요."),
+            html("작업 공간을 지우지만 않으면 한 번만 하면 돼요.")
+          ],
+          trouble: [
+            { q: "붙여넣기가 안 돼요", a: [
+              html("터미널을 길게 누르거나 오른쪽 클릭해서 <b>Paste</b>를 눌러보세요. 키보드가 있으면 command + V (안드로이드는 Ctrl + Shift + V)."),
+              html("브라우저가 '클립보드 접근 허용'을 물어보면 허용을 눌러야 해요.")
+            ]},
+            T_401
+          ]
+        },
+        {
+          title: "Claude Code, Codex 켜보기",
+          next: "다 했어요",
+          body: [
+            html("먼저 Claude Code를 켜요."),
+            cmd("baze claude"),
+            html("처음 켜면 몇 가지 질문이 나와요. Enter로 넘기면 돼요. 그다음 이렇게 부탁해 보세요."),
+            note("index.html 파일로 지금 시간을 크게 보여주는 시계 페이지 만들어줘"),
+            html('만든 파일은 왼쪽 <b>ai-practice</b> 폴더에 생겨요. <span class="inline">/exit</span> 로 나온 다음 이번엔 Codex를 켜서 아까 만든 시계를 고쳐달라고 해보세요.'),
+            cmd("baze codex"),
+            pen("파일 만들어도 되냐고 물어보면, 읽어보고 Yes")
+          ],
+          trouble: [T_401, T_POLICY, T_CREDIT, T_MODEL]
+        }
+      ],
+      again: '<a href="https://github.com/codespaces" target="_blank" rel="noopener">github.com/codespaces</a>에 들어가서 아까 만든 작업 공간을 눌러 여세요. <b>새로 만들지 말고</b> 있던 걸 여는 거예요. 새로 만들면 키를 다시 등록해야 해요.',
+      againCmds: ["baze claude"],
+      stop: '다 쓰면 <a href="https://github.com/codespaces" target="_blank" rel="noopener">github.com/codespaces</a> → 내 작업 공간 옆 <b>···</b> → <b>Stop codespace</b>. 30분 동안 안 쓰면 알아서 멈추긴 하지만, 그 30분도 무료 시간에서 빠져요.'
+    }
+  };
+
+  // ---- 상태 저장 ----
+  var STORE = "aiStart";
+  function save(state){ try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){} }
+  function load(){ try{ return JSON.parse(localStorage.getItem(STORE) || "null"); }catch(e){ return null; } }
+
+  // ---- 그리기 ----
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  function renderBlock(b){
+    if (b.cmd != null) {
+      return '<div class="cmd"><code>' + esc(b.cmd) + '</code><button type="button" class="copy" data-copy="' + esc(b.cmd) + '">복사</button></div>';
+    }
+    if (b.pen) return '<div class="pen' + (b.red ? ' red' : '') + '">' + esc(b.pen) + '</div>';
+    if (b.note) return '<div class="note">' + esc(b.note) + '</div>';
+    if (b.link) return '<a class="btn main wide" href="' + esc(b.href) + '" target="_blank" rel="noopener">' + esc(b.link) + '</a>';
+    return '<div>' + b.html + '</div>';
+  }
+
+  function show(id){
+    ["home","step","done"].forEach(function(s){ $(s).hidden = (s !== id); });
+    window.scrollTo(0, 0);
+  }
+
+  function renderHome(){
+    var st = load();
+    var r = $("resume");
+    if (st && DEVICES[st.device] && st.step > 0) {
+      var d = DEVICES[st.device];
+      var n = Math.min(st.step, d.steps.length - 1);
+      r.textContent = "아까 하던 거 이어서 하기 → " + d.label + " · " + (n + 1) + "단계 " + d.steps[n].title;
+      r.onclick = function(){ go(st.device, n); };
+      r.hidden = false;
+    } else {
+      r.hidden = true;
+    }
+    show("home");
+  }
+
+  function renderStep(dev, i){
+    var d = DEVICES[dev], s = d.steps[i], total = d.steps.length;
+    $("step-where").textContent = d.label + " · " + (i + 1) + " / " + total;
+    $("step-bar").style.width = Math.round((i + 1) / total * 100) + "%";
+    $("step-num").textContent = (i + 1) + "단계";
+    $("step-title").textContent = s.title;
+    $("step-body").innerHTML = s.body.map(renderBlock).join("");
+    var t = s.trouble || [];
+    $("step-trouble").hidden = !t.length;
+    $("step-trouble").innerHTML = t.length ? '<div class="pen">빨간 글씨가 나왔어요</div>' + t.map(function(x){
+      return '<details><summary>' + esc(x.q) + '</summary><div>' + x.a.map(renderBlock).join("") + '</div></details>';
+    }).join("") : "";
+    $("prev").textContent = i === 0 ? "처음으로" : "이전";
+    $("prev").onclick = function(){ i === 0 ? go() : go(dev, i - 1); };
+    $("next").textContent = s.next + " →";
+    $("next").onclick = function(){ i + 1 < total ? go(dev, i + 1) : go(dev, "done"); };
+    save({ device: dev, step: i });
+    show("step");
+    $("step-title").focus();
+  }
+
+  function renderDone(dev){
+    var d = DEVICES[dev];
+    var parts = [
+      '<div class="pen">다음에 다시 쓸 때</div>',
+      '<div>' + d.again + '</div>'
+    ].concat(d.againCmds.map(function(c){ return renderBlock(cmd(c)); }));
+    if (d.stop) parts.push('<div class="pen red">태블릿은 다 쓰면 꼭 멈추기</div><div>' + d.stop + '</div>');
+    parts.push(
+      '<div class="pen">기억할 것 세 가지</div>',
+      '<ol>' +
+        '<li>API 키는 나만 쓰기. 남한테 보내지 않기.</li>' +
+        '<li>남은 크레딧은 <span class="inline">baze credits</span> 로 가끔 확인하기.</li>' +
+        '<li>AI가 짠 코드도 한 번은 내가 읽어보기. 틀릴 때도 꽤 있어요.</li>' +
+      '</ol>'
+    );
+    $("done-body").innerHTML = parts.join("");
+    save({ device: dev, step: d.steps.length - 1 });
+    show("done");
+    $("done-title").focus();
+  }
+
+  // 주소 뒤 #win/3 처럼 붙어서 뒤로 가기, 링크 공유가 됩니다.
+  function go(dev, i){
+    location.hash = dev ? dev + "/" + (i === "done" ? "done" : (i + 1)) : "";
+  }
+  function route(){
+    var m = location.hash.replace("#", "").split("/");
+    var dev = m[0], d = DEVICES[dev];
+    if (!d) return renderHome();
+    if (m[1] === "done") return renderDone(dev);
+    var n = parseInt(m[1], 10);
+    if (!(n >= 1 && n <= d.steps.length)) n = 1;
+    renderStep(dev, n - 1);
+  }
+
+  document.addEventListener("click", function(e){
+    var dv = e.target.closest("[data-device]");
+    if (dv) { go(dv.getAttribute("data-device"), 0); return; }
+    var cp = e.target.closest("[data-copy]");
+    if (cp) {
+      var text = cp.getAttribute("data-copy");
+      var done = function(){ cp.textContent = "복사됨"; cp.classList.add("done"); setTimeout(function(){ cp.textContent = "복사"; cp.classList.remove("done"); }, 1600); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+      } else { fallbackCopy(text); done(); }
+    }
+  });
+  function fallbackCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+  $("change-device").onclick = function(){ go(); };
+  $("back-home").onclick = function(){ go(); };
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>
